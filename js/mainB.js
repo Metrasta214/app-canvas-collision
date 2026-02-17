@@ -1,15 +1,15 @@
 const canvas = document.getElementById("canvasB");
 const ctx = canvas.getContext("2d");
 
+const countEl = document.getElementById("countB");
+const tableBody = document.getElementById("tableB");
+
 function resizeCanvas() {
   canvas.width = canvas.clientWidth;
   canvas.height = canvas.clientHeight;
 }
 resizeCanvas();
-
-window.addEventListener("resize", () => {
-  resizeCanvas();
-});
+window.addEventListener("resize", resizeCanvas);
 
 let window_width = canvas.width;
 let window_height = canvas.height;
@@ -23,13 +23,37 @@ function circlesCollide(c1, c2) {
 
 function rand(min, max) { return Math.random() * (max - min) + min; }
 function randInt(min, max) { return Math.floor(rand(min, max + 1)); }
+function timeNow() { return new Date().toLocaleTimeString(); }
+
+let collisionsCount = 0;
+
+// guarda estado previo por par: "1-5" => true/false
+const prevPairState = new Map();
+
+function pairKey(a, b) {
+  const i = Math.min(a, b);
+  const j = Math.max(a, b);
+  return `${i}-${j}`;
+}
+
+function logCollision() {
+  collisionsCount++;
+  countEl.textContent = String(collisionsCount);
+
+  const tr = document.createElement("tr");
+  tr.innerHTML = `
+    <td>${collisionsCount}</td>
+    <td>${timeNow()}</td>
+  `;
+  tableBody.prepend(tr);
+}
+
 
 class Circle {
   constructor(x, y, radius, color, text, speed) {
     this.posX = x;
     this.posY = y;
     this.radius = radius;
-
     this.baseColor = color;
     this.color = color;
     this.text = text;
@@ -103,17 +127,34 @@ function loop() {
 
   ctx.clearRect(0, 0, window_width, window_height);
 
+  // reset colores
   for (const c of circles) c.color = c.baseColor;
 
+  // detectar colisiones + registrar eventos (inicio)
   for (let i = 0; i < circles.length; i++) {
     for (let j = i + 1; j < circles.length; j++) {
-      if (circlesCollide(circles[i], circles[j])) {
-        circles[i].color = "red";
-        circles[j].color = "red";
+      const a = circles[i];
+      const b = circles[j];
+
+      const colliding = circlesCollide(a, b);
+      const key = pairKey(Number(a.text), Number(b.text));
+      const was = prevPairState.get(key) === true;
+
+      if (colliding) {
+        a.color = "red";
+        b.color = "red";
       }
+
+      // registrar solo cuando empieza (antes no, ahora sí)
+      if (colliding && !was) {
+        logCollision(`${a.text} ↔ ${b.text}`);
+      }
+
+      prevPairState.set(key, colliding);
     }
   }
 
+  // actualizar movimiento y dibujar
   for (const c of circles) c.update(ctx);
 }
 

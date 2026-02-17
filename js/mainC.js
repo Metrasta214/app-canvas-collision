@@ -1,21 +1,44 @@
 const canvas = document.getElementById("canvasC");
 const ctx = canvas.getContext("2d");
 
+const countEl = document.getElementById("countC");
+const tableBody = document.getElementById("tableC");
+
 function resizeCanvas() {
   canvas.width = canvas.clientWidth;
   canvas.height = canvas.clientHeight;
 }
 resizeCanvas();
-
-window.addEventListener("resize", () => {
-  resizeCanvas();
-});
+window.addEventListener("resize", resizeCanvas);
 
 let window_width = canvas.width;
 let window_height = canvas.height;
 
 function rand(min, max) { return Math.random() * (max - min) + min; }
 function randInt(min, max) { return Math.floor(rand(min, max + 1)); }
+function timeNow() { return new Date().toLocaleTimeString(); }
+
+let collisionsCount = 0;
+const prevPairState = new Map();
+
+function pairKey(a, b) {
+  const i = Math.min(a, b);
+  const j = Math.max(a, b);
+  return `${i}-${j}`;
+}
+
+function logCollision() {
+  collisionsCount++;
+  countEl.textContent = String(collisionsCount);
+
+  const tr = document.createElement("tr");
+  tr.innerHTML = `
+    <td>${collisionsCount}</td>
+    <td>${timeNow()}</td>
+  `;
+  tableBody.prepend(tr);
+}
+
 
 function circlesCollide(c1, c2) {
   const dx = c1.posX - c2.posX;
@@ -158,18 +181,37 @@ function loop() {
 
   for (const c of circles) c.color = c.baseColor;
 
+  // mover primero
   for (const c of circles) c.moveAndBounceWalls();
 
+  // colisiones + registro (inicio) + rebote
   for (let i = 0; i < circles.length; i++) {
     for (let j = i + 1; j < circles.length; j++) {
-      const collided = resolveCircleCollision(circles[i], circles[j]);
-      if (collided) {
-        circles[i].color = "red";
-        circles[j].color = "red";
+      const a = circles[i];
+      const b = circles[j];
+
+      const collidingNow = circlesCollide(a, b);
+
+      const key = pairKey(Number(a.text), Number(b.text));
+      const was = prevPairState.get(key) === true;
+
+      if (collidingNow) {
+        // color
+        a.color = "red";
+        b.color = "red";
+
+        // registrar SOLO al inicio
+        if (!was) logCollision(`${a.text} ↔ ${b.text}`);
+
+        // rebote real (separación + impulso)
+        resolveCircleCollision(a, b);
       }
+
+      prevPairState.set(key, collidingNow);
     }
   }
 
+  // dibujar
   for (const c of circles) c.update(ctx);
 }
 

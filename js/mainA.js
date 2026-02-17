@@ -1,22 +1,19 @@
 const canvas = document.getElementById("canvasA");
 const ctx = canvas.getContext("2d");
 
-// --- Resize correcto ---
+const countEl = document.getElementById("countA");
+const tableBody = document.getElementById("tableA");
+
 function resizeCanvas() {
   canvas.width = canvas.clientWidth;
   canvas.height = canvas.clientHeight;
 }
 resizeCanvas();
+window.addEventListener("resize", resizeCanvas);
 
-window.addEventListener("resize", () => {
-  resizeCanvas();
-});
-
-// Dimensiones del canvas (se actualizan en cada frame)
 let window_width = canvas.width;
 let window_height = canvas.height;
 
-// ====== FUNCIÓN DE COLISIÓN ENTRE 2 CÍRCULOS ======
 function circlesCollide(c1, c2) {
   const dx = c1.posX - c2.posX;
   const dy = c1.posY - c2.posY;
@@ -24,17 +21,35 @@ function circlesCollide(c1, c2) {
   return distance <= (c1.radius + c2.radius);
 }
 
+function timeNow() {
+  return new Date().toLocaleTimeString();
+}
+
+let collisionsCount = 0;
+let wasColliding = false;
+
+function logCollision() {
+  collisionsCount++;
+  countEl.textContent = String(collisionsCount);
+
+  const tr = document.createElement("tr");
+  tr.innerHTML = `
+    <td>${collisionsCount}</td>
+    <td>${timeNow()}</td>
+  `;
+  tableBody.prepend(tr);
+}
+
+
 class Circle {
   constructor(x, y, radius, color, text, speed) {
     this.posX = x;
     this.posY = y;
     this.radius = radius;
-
     this.baseColor = color;
     this.color = color;
     this.text = text;
     this.speed = speed;
-
     this.dx = 1 * this.speed;
     this.dy = 1 * this.speed;
   }
@@ -67,28 +82,35 @@ class Circle {
   }
 }
 
-let miCirculo = new Circle(90, 90, 35, "blue", "1", 2.5);
-let miCirculo2 = new Circle(220, 140, 45, "blue", "2", 2.5);
+let c1 = new Circle(90, 90, 35, "blue", "1", 2.5);
+let c2 = new Circle(220, 140, 45, "blue", "2", 2.5);
 
 function loop() {
   requestAnimationFrame(loop);
 
-  // actualizar dimensiones por si cambió el tamaño del card
   window_width = canvas.width;
   window_height = canvas.height;
 
   ctx.clearRect(0, 0, window_width, window_height);
 
-  miCirculo.color = miCirculo.baseColor;
-  miCirculo2.color = miCirculo2.baseColor;
+  c1.color = c1.baseColor;
+  c2.color = c2.baseColor;
 
-  if (circlesCollide(miCirculo, miCirculo2)) {
-    miCirculo.color = "red";
-    miCirculo2.color = "red";
+  const colliding = circlesCollide(c1, c2);
+
+  if (colliding) {
+    c1.color = "red";
+    c2.color = "red";
   }
 
-  miCirculo.update(ctx);
-  miCirculo2.update(ctx);
+  // registrar SOLO cuando empieza la colisión
+  if (colliding && !wasColliding) {
+    logCollision("1 ↔ 2");
+  }
+  wasColliding = colliding;
+
+  c1.update(ctx);
+  c2.update(ctx);
 }
 
 loop();

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -40,9 +41,28 @@
             <h5 class="card-title fw-semibold mb-1">Ejemplo A</h5>
             <p class="text-soft mb-3">Dos círculos: detecta colisión y cambia color.</p>
 
-            <div class="canvas-wrap">
+            <div class="canvas-wrap mb-3">
               <canvas id="canvasA"></canvas>
             </div>
+
+            <div class="d-flex align-items-center justify-content-between mb-2">
+              <span class="text-soft">Colisiones:</span>
+              <span class="counter-pill"><strong id="countA">0</strong></span>
+            </div>
+
+            <div class="table-wrap">
+              <table class="table table-sm table-dark table-hover align-middle mb-0">
+                <thead>
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Hora</th>
+                    </tr>
+                  </thead>
+                <tbody id="tableA"></tbody>
+              </table>
+            </div>
+
           </div>
         </div>
       </div>
@@ -54,9 +74,27 @@
             <h5 class="card-title fw-semibold mb-1">Ejemplo B</h5>
             <p class="text-soft mb-3">N círculos: colisión por pares y cambio de color.</p>
 
-            <div class="canvas-wrap">
+            <div class="canvas-wrap mb-3">
               <canvas id="canvasB"></canvas>
             </div>
+
+            <div class="d-flex align-items-center justify-content-between mb-2">
+              <span class="text-soft">Colisiones:</span>
+              <span class="counter-pill"><strong id="countB">0</strong></span>
+            </div>
+
+            <div class="table-wrap">
+              <table class="table table-sm table-dark table-hover align-middle mb-0">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Hora</th>
+                  </tr>
+                </thead>
+                <tbody id="tableB"></tbody>
+              </table>
+            </div>
+
           </div>
         </div>
       </div>
@@ -68,9 +106,27 @@
             <h5 class="card-title fw-semibold mb-1">Ejemplo C</h5>
             <p class="text-soft mb-3">N círculos: colisión con rebote (borde con borde).</p>
 
-            <div class="canvas-wrap">
+            <div class="canvas-wrap mb-3">
               <canvas id="canvasC"></canvas>
             </div>
+
+            <div class="d-flex align-items-center justify-content-between mb-2">
+              <span class="text-soft">Colisiones:</span>
+              <span class="counter-pill"><strong id="countC">0</strong></span>
+            </div>
+
+            <div class="table-wrap">
+              <table class="table table-sm table-dark table-hover align-middle mb-0">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Hora</th>
+                  </tr>
+                </thead>
+                <tbody id="tableC"></tbody>
+              </table>
+            </div>
+
           </div>
         </div>
       </div>
@@ -80,17 +136,17 @@
 
   <footer class="py-4">
     <div class="container d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2">
-      <span class="text-soft">© 2026 · Alvaro Madrid Morales</span>
+      <span class="text-soft">© 2026 · Canvas Collisions</span>
       <span class="text-soft">Bootstrap + API Canvas</span>
     </div>
   </footer>
 
-  <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-  <!-- IMPORTANTÍSIMO: módulos para que no choquen variables -->
+  <!-- módulos para que no choquen variables -->
   <script type="module" src="./js/mainA.js"></script>
   <script type="module" src="./js/mainB.js"></script>
   <script type="module" src="./js/mainC.js"></script>
 </body>
+
 </html>
